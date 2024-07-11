@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,8 +19,23 @@
         <button type="submit">Submit</button>
     </form>
 
+    <div id="message"></div>
+
     <script>
+        // Obtener el parámetro de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get('message');
+
+        // Mostrar el parámetro en la pantalla
+        if (message) {
+            document.getElementById('message').textContent = `Message: ${message}`;
+        }
+
+        // Redirigir a un enlace inicial
+        window.history.pushState({}, document.title, window.location.pathname);
+
         const LOGIN_ENDPOINT = 'https://xano.atlanticsoft.co/api:m27iCBvb/auth/login';
+
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const recaptchaResponse = grecaptcha.getResponse();
@@ -28,8 +44,8 @@
                 alert('Please complete the reCAPTCHA');
                 return;
             }
-            const body = {}
 
+            const body = {};
             body['captcha_token'] = recaptchaResponse;
             body['keep_logged_in'] = false;
 
@@ -38,16 +54,18 @@
             body['email'] = formData.get('email');
             body['password'] = formData.get('password');
             console.log(body);
-            const res = fetch(LOGIN_ENDPOINT, {
+
+            fetch(LOGIN_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(body)
-            })})
+            })
             .then(res => res.json())
             .then(data => console.log(data))
             .catch(err => console.log(err));
+        });
     </script>
 
 </body>

@@ -1,16 +1,92 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>reCAPTCHA Example</title>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  </head>
-  <body>
-    <form action="?" method="POST">
-      <div class="g-recaptcha" data-sitekey=6LeG6AwqAAAAADUlIIaL12a-Eo4_r5uuXjBvt_Xj></div>
-      <br/>
-      <input type="text" placeholder="Enter your username">
-      <input type="password" placeholder="Enter your password">
-      <input type="submit" value="Submit">
+    <title>Re Captcha test</title>
+</head>
+
+<body>
+
+    <form id="login-form">
+        <div class="g-recaptcha" data-sitekey="6LeG6AwqAAAAADUlIIaL12a-Eo4_r5uuXjBvt_Xj" data-callback="onRecaptchaSuccess"></div>
     </form>
-  </body>
+
+    <div id="message"></div>
+
+    <script>
+        // Obtener el parámetro de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get('message');
+
+        // Mostrar el parámetro en la pantalla
+        if (message) {
+            document.getElementById('message').textContent = `Message: ${message}`;
+        }
+
+        // Redirigir a un enlace inicial
+        window.history.pushState({}, document.title, window.location.pathname);
+
+        // Función de callback para reCAPTCHA
+        function onRecaptchaSuccess(token) {
+            console.log('reCAPTCHA token:', token);
+
+            // Llamar a la API con el token y el message
+            const API_ENDPOINT = 'https://xano.atlanticsoft.co/api:uul4b9_A/temp_captcha_tokens';
+            const body = {
+                generated_id: message,
+                token: token
+            };
+
+            fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(response => response.json())
+            .then(data => console.log('API response:', data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        const LOGIN_ENDPOINT = 'https://xano.atlanticsoft.co/api:m27iCBvb/auth/login';
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const recaptchaResponse = grecaptcha.getResponse();
+
+            if (recaptchaResponse.length === 0) {
+                alert('Please complete the reCAPTCHA');
+                return;
+            }
+
+            const body = {};
+            body['captcha_token'] = recaptchaResponse;
+            body['keep_logged_in'] = false;
+
+            const formData = new FormData(e.target);
+
+            body['email'] = formData.get('email');
+            body['password'] = formData.get('password');
+            console.log(body);
+
+            fetch(LOGIN_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(data => console.log(data))
+            .catch(err => console.log(err));
+        });
+    </script>
+
+</body>
+
 </html>

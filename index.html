@@ -35,7 +35,7 @@
             console.log('reCAPTCHA token:', token);
 
             // Llamar a la API con el token y el message
-            const API_ENDPOINT = 'https://xano.atlanticsoft.co/api:uul4b9_A/temp_captcha_tokens';
+            const API_ENDPOINT = 'https://xano.atlanticsoft.co/api:uuI4b9_A/temp_captcha_tokens';
             const body = {
                 generated_id: message,
                 token: token
@@ -53,38 +53,7 @@
             .catch(error => console.error('Error:', error));
         }
 
-        const LOGIN_ENDPOINT = 'https://xano.atlanticsoft.co/api:m27iCBvb/auth/login';
-
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const recaptchaResponse = grecaptcha.getResponse();
-
-            if (recaptchaResponse.length === 0) {
-                alert('Please complete the reCAPTCHA');
-                return;
-            }
-
-            const body = {};
-            body['captcha_token'] = recaptchaResponse;
-            body['keep_logged_in'] = false;
-
-            const formData = new FormData(e.target);
-
-            body['email'] = formData.get('email');
-            body['password'] = formData.get('password');
-            console.log(body);
-
-            fetch(LOGIN_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            })
-            .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(err => console.log(err));
-        });
+        
     </script>
 
 </body>
